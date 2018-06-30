@@ -6,6 +6,10 @@ const jsonWebToken = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const passport = require('passport');
 
+// Load Input Validation
+const validateRegisterInput = require('../../validation/register');
+const validateLoginInput = require('../../validation/login');
+
 // Bring In User Model
 const User = require('../../models/User');
 
@@ -18,6 +22,13 @@ router.get('/test', (req, res) => res.json({ msg: 'Users Route Works' }));
 // @descr   Register User
 // @access  Public
 router.post('/register', (req, res) => {
+  const { errors, isValid } = validateRegisterInput(req.body);
+
+  // Check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ email: 'Email already Exists' });
@@ -58,6 +69,13 @@ router.post('/register', (req, res) => {
 // @descr   Login User / Returning JWT Token
 // @access  Public
 router.post('/login', (req, res) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  // Check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
@@ -71,7 +89,10 @@ router.post('/login', (req, res) => {
     // Check Password
     bcrypt.compare(password, user.password).then(success => {
       if (success) {
+        // User Matched
         const payload = { id: user.id, name: user.name, avatar: user.avatar };
+
+        // Sign Token
         jsonWebToken.sign(
           payload,
           keys.secretOrKey,

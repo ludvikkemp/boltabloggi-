@@ -31,7 +31,8 @@ router.post('/register', (req, res) => {
 
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
-      return res.status(400).json({ email: 'Email already Exists' });
+      errors.email = 'Email already exists';
+      return res.status(400).json(errors);
     } else {
       // Documentaion: https://github.com/emerleite/node-gravatar
       const avatar = gravatar.url(req.body.email, {
@@ -102,7 +103,8 @@ router.post('/login', (req, res) => {
           }
         );
       } else {
-        return res.status(400).json({ password: 'Password Incorrect' });
+        errors.password = 'Password incorrect';
+        return res.status(400).json(errors);
       }
     });
   });

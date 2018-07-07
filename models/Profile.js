@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 // Create Schema
-const ProfileSchema = new schema({
+const ProfileSchema = new Schema({
   user: {
-    type: schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'users'
   },
   handle: {
